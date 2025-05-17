@@ -1,12 +1,30 @@
 import dotenv from "dotenv";
+import { app } from "./app.js";
 
 dotenv.config({ path: "./.env" });
 
 console.log(process.env.PORT);
 import { connection } from "./db/index.js";
 
-connection();
+// asynce returns a promise
+connection()
+.then(()=>{
+    app.listen(process.env.PORT||8000,()=>{
+        console.log(`Server is running on Port ${process.env.PORT}`);
+        
+    })
+})
+.catch((err)=>{
+    console.log("Error in connecting :",err)
+    process.exit(1)
+})
  
+
+app.on("error", (error) => {
+    console.error("App encountered an error:", error);
+    process.exit(1);
+});
+
 /*
 const app=express();
 
