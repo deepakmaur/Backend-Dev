@@ -64,6 +64,8 @@ userSchema.pre("save",async function(next){ // here don't use ()=>{} because thi
 
 })
 
+// In Mongoose, schema.methods allows us to define instance methods that can be called on documents.
+
 userSchema.methods.isPasswordCorrect=async function(password){
     return await bcrypt.compare(password,this.password)
 }

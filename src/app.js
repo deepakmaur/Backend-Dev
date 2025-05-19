@@ -25,5 +25,5 @@ app.use(express.static("public"));
 
 
 // This parses cookies sent in client requests and makes them accessible via re
-app.use(express.cookieParser())
+app.use(cookieParser())
 export { app }
