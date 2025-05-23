@@ -26,4 +26,14 @@ app.use(express.static("public"));
 
 // This parses cookies sent in client requests and makes them accessible via re
 app.use(cookieParser())
+
+
+//routes import
+
+import userRouters from "./routes/user.routes.js"
+
+// routes declaration
+app.use("/api/v1/users",userRouters)
+
+
 export { app }
