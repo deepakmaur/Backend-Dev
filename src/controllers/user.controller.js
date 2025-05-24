@@ -17,35 +17,44 @@ const registerUser=asyncHandler( async (req,res)=>{
     //check for creation
     // return rs
 
-    const {fullName,email,username,password}=req.body
+    const {fullName,email,userName,password}=req.body
     console.log("email ",email)
 
     if(
-        [fullName,email,username,password].some((field)=>field?.trim==="")
+        [fullName,email,userName,password].some((field)=>field?.trim()==="")
     ){
         throw new ApiError(400,"All fields are Required")
     }
 
     // Instead of checking first username then email we can check both simultanesouly
 
-    const existedUser=User.findOne(  
+    const existedUser=await User.findOne(  
         {
-            $or : [{username},{email}]
+            $or : [{userName},{email}]
         }
     )
     if(existedUser){
         throw new ApiError(409,"User with email or username already exist")
     }
 
+    //console.log(req.files)
+
     const avatarImageLocalPath=req.files?.avatar[0]?.path;
-    const coverImageLocalPath=req.files?.coverImage[0]?.path;
+    const coverImageLocalPath = req.files?.coverImage?.length ? req.files.coverImage[0].path : undefined;
+
+
+    
 
     if(!avatarImageLocalPath){
         throw new ApiError(400,"Avatar file is needed")
     }
 
     const avatar = await uploadOnCloudinary(avatarImageLocalPath);
-    const coverImage = await uploadOnCloudinary(coverImageLocalPath);
+    let coverImage;
+if (coverImageLocalPath) {
+  coverImage = await uploadOnCloudinary(coverImageLocalPath);
+}
+
 
     if(!avatar){
         throw new ApiError(400,"Avatar file is needed")
@@ -57,7 +66,7 @@ const registerUser=asyncHandler( async (req,res)=>{
         coverImage:coverImage?.url||"",
         email,
         password,
-        username:username.tolower()
+        userName:userName.toLowerCase()
     })
 
     const userCreated=await User.findById(user._id).select(
